@@ -100,6 +100,9 @@ func (l *LoginManager) getToken() error {
 	if err != nil {
 		return err
 	}
+	for k, v := range header {
+		req.Header.Add(k, v)
+	}
 	response, err := l.client.Do(req)
 	if err != nil {
 		return err
