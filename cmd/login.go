@@ -26,8 +26,8 @@ var loginCmd = &cobra.Command{
 			Enc:                "srun_bx1",
 			VType:              "1",
 			LoginPageURL:       "https://gw.buaa.edu.cn/srun_portal_pc?ac_id=1&theme=buaa",
-			GetChallengeApiURL: "http://gw.buaa.edu.cn/cgi-bin/get_challenge",
-			LoginApiURL:        "http://gw.buaa.edu.cn/cgi-bin/srun_portal",
+			GetChallengeApiURL: "https://gw.buaa.edu.cn/cgi-bin/get_challenge",
+			LoginApiURL:        "https://gw.buaa.edu.cn/cgi-bin/srun_portal",
 		})
 
 		for i := 0; i < retry; i++ {
