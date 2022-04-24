@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	username string
-	password string
-	retry    int
+	loginUsername string
+	loginPassword string
+	retry         int
 )
 
 var loginCmd = &cobra.Command{
@@ -19,8 +19,8 @@ var loginCmd = &cobra.Command{
 	Short: "Login BUAA gateway.",
 	Run: func(cmd *cobra.Command, args []string) {
 		lm := internal.NewLoginManager(internal.NewLoginManagerParams{
-			Username:           username,
-			Password:           password,
+			Username:           loginUsername,
+			Password:           loginPassword,
 			N:                  "200",
 			AcID:               "1",
 			Enc:                "srun_bx1",
@@ -43,10 +43,10 @@ var loginCmd = &cobra.Command{
 }
 
 func init() {
-	loginCmd.Flags().StringVarP(&username, "username", "u", "", "Your buaa gw username.")
+	loginCmd.Flags().StringVarP(&loginUsername, "username", "u", "", "Your buaa gw username.")
 	loginCmd.MarkFlagRequired("username")
 
-	loginCmd.Flags().StringVarP(&password, "password", "p", "", "Your buaa gw password.")
+	loginCmd.Flags().StringVarP(&loginPassword, "password", "p", "", "Your buaa gw password.")
 	loginCmd.MarkFlagRequired("password")
 
 	loginCmd.Flags().IntVarP(&retry, "retry", "r", 5, "The login retry times.")
