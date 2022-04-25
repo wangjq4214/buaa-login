@@ -20,6 +20,7 @@ var (
 	daemonUsername string
 	daemonPassword string
 	daemonIP       string
+	daemonLog      string
 )
 
 var daemonCmd = &cobra.Command{
@@ -53,7 +54,7 @@ func childHandler() {
 	if err != nil {
 		log.Printf("Can not get current dir, err: %v\n", err.Error())
 	}
-	stdout, err := os.OpenFile(filepath.Join(pwd, "/buaa-login.log"), os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	stdout, err := os.OpenFile(filepath.Join(pwd, daemonLog), os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		log.Printf("Can not open file, err: %v\n", err.Error())
 	}
@@ -85,12 +86,19 @@ func childHandler() {
 			args = append(args, "-c", "4")
 		}
 
-		cmd := exec.Command("ping", args...)
-		err := cmd.Run()
+		path, err := exec.LookPath("ping")
+		if err != nil {
+			log.Fatalf("We got an error while finding the ping command, err: %v\n", err.Error())
+		}
+
+		cmd := exec.Command(path, args...)
+		err = cmd.Run()
 		if err == nil {
 			log.Println("The PC is online.")
 			timer.Reset(5 * time.Second)
 			continue
+		} else {
+			log.Printf("We got an error while ping, err: %v\n", err.Error())
 		}
 
 		for i := 0; i < 5; i++ {
@@ -113,7 +121,8 @@ func init() {
 	daemonCmd.Flags().StringVarP(&daemonPassword, "password", "p", "", "Your buaa gw password.")
 	daemonCmd.MarkFlagRequired("password")
 
-	daemonCmd.Flags().StringVar(&daemonPassword, "ip", "114.114.114.114", "Test ip with ping.")
+	daemonCmd.Flags().StringVar(&daemonIP, "ip", "114.114.114.114", "Test ip with ping.")
+	daemonCmd.Flags().StringVar(&daemonLog, "log", "login.log", "Specify the log file path.")
 
 	rootCmd.AddCommand(daemonCmd)
 }

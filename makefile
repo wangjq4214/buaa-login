@@ -1,8 +1,14 @@
-VERSION=0.2.0
+VERSION=0.2.1
 PREFIX=login
 
 build:
 	go build -ldflags "-X main.Version=${VERSION}" -o ./bin/ ./cmd
+
+build-linux:
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.Version=${VERSION}" -o ./bin/ ./cmd
+
+clean:
+	rm -r bin
  
 run:
 	go run ./cmd
