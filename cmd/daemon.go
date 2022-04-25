@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/wangjq4214/buaa-login/internal"
+	login "github.com/wangjq4214/buaa-login"
 )
 
 const envName = "BUAA_LOGIN_DAEMON"
@@ -64,7 +64,7 @@ func childHandler() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.SetOutput(stdout)
 
-	lm := internal.NewLoginManager(internal.NewLoginManagerParams{
+	lm := login.NewLoginManager(login.NewLoginManagerParams{
 		Username:           daemonUsername,
 		Password:           daemonPassword,
 		N:                  "200",

@@ -1,13 +1,13 @@
-package internal_test
+package login_test
 
 import (
 	"testing"
 
-	"github.com/wangjq4214/buaa-login/internal"
+	login "github.com/wangjq4214/buaa-login"
 )
 
 func TestLogin(t *testing.T) {
-	lm := internal.NewLoginManager(internal.NewLoginManagerParams{
+	lm := login.NewLoginManager(login.NewLoginManagerParams{
 		Username:           "by2106105",
 		Password:           "",
 		N:                  "200",

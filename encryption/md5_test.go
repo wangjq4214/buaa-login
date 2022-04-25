@@ -3,7 +3,7 @@ package encryption_test
 import (
 	"testing"
 
-	"github.com/wangjq4214/buaa-login/internal/encryption"
+	"github.com/wangjq4214/buaa-login/encryption"
 )
 
 func TestGetMD5(t *testing.T) {
