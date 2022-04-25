@@ -15,7 +15,7 @@ compile:
 	GOOS=linux GOARCH=386 go build -ldflags "-w -s -X main.Version=${VERSION}" -o bin/${PREFIX}-linux-386 ./cmd
 	# Windows
 	GOOS=windows GOARCH=386 go build -ldflags "-w -s -X main.Version=${VERSION}" -o bin/${PREFIX}-windows-386.exe ./cmd
-  # 64-Bit
+	# 64-Bit
 	# MacOS
 	GOOS=darwin GOARCH=amd64 go build -ldflags "-w -s -X main.Version=${VERSION}" -o bin/${PREFIX}-darwin-amd64 ./cmd
 	# Linux
