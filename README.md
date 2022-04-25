@@ -1,5 +1,7 @@
 # buaa-login
 
+[![unit-test](https://github.com/wangjq4214/buaa-login/actions/workflows/test.yml/badge.svg)](https://github.com/wangjq4214/buaa-login/actions/workflows/test.yml)
+
 提供在命令行中登录北航校园网的程序，编译为单一的可执行文件，免去安装依赖。
 
 ## 登录命令
