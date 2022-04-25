@@ -15,4 +15,4 @@ jobs:
           go-version: ">=1.17.0"
       - run: |
           go version
-          go test -v ./...
+          go test -v ./encryption
