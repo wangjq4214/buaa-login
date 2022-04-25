@@ -9,27 +9,27 @@ func force(msg string) []byte {
 	return []byte(msg)
 }
 
-func ordat(msg string, idx int) int {
+func ordat(msg string, idx int) int64 {
 	if len(msg) > idx {
-		return int(msg[idx])
+		return int64(msg[idx])
 	}
 	return 0
 }
 
-func senCode(msg string, key bool) []int {
+func senCode(msg string, key bool) []int64 {
 	l := len(msg)
-	pwd := make([]int, 0)
+	pwd := make([]int64, 0)
 	for i := 0; i < l; i += 4 {
 		pwd = append(pwd, ordat(msg, i)|ordat(msg, i+1)<<8|ordat(msg, i+2)<<16|ordat(msg, i+3)<<24)
 	}
 	if key {
-		pwd = append(pwd, l)
+		pwd = append(pwd, int64(l))
 	}
 
 	return pwd
 }
 
-func lenCode(msg []int) string {
+func lenCode(msg []int64) string {
 	l := len(msg)
 	res := make([]string, l)
 	for i := 0; i < l; i++ {
@@ -50,15 +50,15 @@ func GetXencode(msg, key string) string {
 			pwdk = append(pwdk, 0)
 		}
 	}
-	n := len(pwd) - 1
+	n := int64(len(pwd) - 1)
 	z := pwd[n]
 	y := pwd[0]
-	c := 0x86014019 | 0x183639A0
-	m := 0
-	e := 0
-	p := 0
-	q := int(math.Floor(6 + 52/(float64(n)+1)))
-	d := 0
+	c := int64(0x86014019 | 0x183639A0)
+	m := int64(0)
+	e := int64(0)
+	p := int64(0)
+	q := int64(math.Floor(6 + 52/(float64(n)+1)))
+	d := int64(0)
 	for i := q; i > 0; i-- {
 		d = (d + c) & (0x8CE0D9BF | 0x731F2640)
 		e = d >> 2 & 3
