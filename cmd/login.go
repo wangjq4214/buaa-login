@@ -1,11 +1,11 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/wangjq4214/buaa-login/internal"
+	login "github.com/wangjq4214/buaa-login"
 )
 
 var (
@@ -18,7 +18,7 @@ var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Login BUAA gateway.",
 	Run: func(cmd *cobra.Command, args []string) {
-		lm := internal.NewLoginManager(internal.NewLoginManagerParams{
+		lm := login.NewLoginManager(login.NewLoginManagerParams{
 			Username:           loginUsername,
 			Password:           loginPassword,
 			N:                  "200",

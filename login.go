@@ -1,4 +1,4 @@
-package internal
+package login
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/wangjq4214/buaa-login/internal/encryption"
+	"github.com/wangjq4214/buaa-login/encryption"
 )
 
 var header = map[string]string{
