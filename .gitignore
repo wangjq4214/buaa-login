@@ -17,4 +17,9 @@
 # The log file
 *.log
 
+# Exec file
 bin
+
+# IDE files
+.vscode
+.idea

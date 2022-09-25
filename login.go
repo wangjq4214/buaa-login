@@ -2,7 +2,7 @@ package login
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,9 +17,9 @@ var header = map[string]string{
 }
 
 var (
-	ErrMatchIPFail    = errors.New("Can not match ip from page")
-	ErrMatchTokenFail = errors.New("Can not match token from api")
-	ErrLoginFail      = errors.New("Can not login from api")
+	ErrMatchIPFail    = errors.New("can not match ip from page")
+	ErrMatchTokenFail = errors.New("can not match token from api")
+	ErrLoginFail      = errors.New("can not login from api")
 )
 
 func getRequestURL(s string, p map[string]string) (string, error) {
@@ -68,7 +68,7 @@ type NewLoginManagerParams struct {
 
 func NewLoginManager(params NewLoginManagerParams) *LoginManager {
 	return &LoginManager{
-		username:           params.Username,
+		username:           strings.ToLower(params.Username),
 		password:           params.Password,
 		n:                  params.N,
 		acID:               params.AcID,
@@ -97,7 +97,7 @@ func (l *LoginManager) getIP() error {
 		return err
 	}
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
@@ -124,6 +124,10 @@ func (l *LoginManager) getToken() error {
 		"username": l.username,
 		"ip":       l.ip,
 	})
+	if err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return err
@@ -137,7 +141,7 @@ func (l *LoginManager) getToken() error {
 	}
 	defer response.Body.Close()
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
@@ -234,6 +238,10 @@ func (l *LoginManager) login() error {
 		"n":        l.n,
 		"type":     l.vType,
 	})
+	if err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return err
@@ -247,7 +255,7 @@ func (l *LoginManager) login() error {
 	}
 	defer response.Body.Close()
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
