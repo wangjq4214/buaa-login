@@ -6,11 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/spf13/cobra"
 	login "github.com/wangjq4214/buaa-login"
+	"github.com/wangjq4214/buaa-login/cmd/ping"
 )
 
 const envName = "BUAA_LOGIN_DAEMON"
@@ -48,22 +48,56 @@ func fatherHandler() {
 	cmd.Start()
 }
 
-func childHandler() {
-	timer := time.NewTimer(0)
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Printf("Can not get current dir, err: %v\n", err.Error())
-	}
-	stdout, err := os.OpenFile(filepath.Join(pwd, daemonLog), os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+func getLogPath(pwd, daemonLog string, idx uint32) string {
+	return filepath.Join(pwd, fmt.Sprintf("%v-%v.log", daemonLog, idx))
+}
+
+func setLog(pwd string, idx *uint32) *os.File {
+	stdout, err := os.OpenFile(getLogPath(pwd, daemonLog, *idx), os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	*idx++
+
 	if err != nil {
 		log.Printf("Can not open file, err: %v\n", err.Error())
 	}
+
+	old_out := os.Stdout
 
 	os.Stdout = stdout
 	os.Stderr = stdout
 
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.SetOutput(stdout)
+
+	return old_out
+}
+
+func logFile() {
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Printf("Can not get current dir, err: %v\n", err.Error())
+	}
+
+	var idx uint32
+	setLog(pwd, &idx)
+
+	go func() {
+		stat, _ := os.Stat(getLogPath(pwd, daemonLog, idx-1))
+		if stat.Size() > 5*1024*1024 {
+			log.Println("remove")
+			old_file := setLog(pwd, &idx)
+			old_file.Close()
+
+			os.Remove(old_file.Name())
+		}
+
+		time.Sleep(30 * 60 * time.Second)
+	}()
+}
+
+func childHandler() {
+	timer := time.NewTimer(0)
+
+	logFile()
 
 	lm := login.NewLoginManager(login.NewLoginManagerParams{
 		Username:           daemonUsername,
@@ -80,37 +114,27 @@ func childHandler() {
 	for {
 		<-timer.C
 
-		sysType := runtime.GOOS
-		args := []string{daemonIP}
-		if sysType != "windows" {
-			args = append(args, "-c", "4")
-		}
+		func() {
+			defer timer.Reset(5 * time.Second)
 
-		path, err := exec.LookPath("ping")
-		if err != nil {
-			log.Fatalf("We got an error while finding the ping command, err: %v\n", err.Error())
-		}
-
-		cmd := exec.Command(path, args...)
-		err = cmd.Run()
-		if err == nil {
-			log.Println("The PC is online.")
-			timer.Reset(5 * time.Second)
-			continue
-		} else {
-			log.Printf("We got an error while ping, err: %v\n", err.Error())
-		}
-
-		for i := 0; i < 5; i++ {
-			err := lm.Login()
-			if err != nil {
-				log.Printf("We got an error while login, err: %v\n", err.Error())
+			err := ping.Ping(daemonIP)
+			if err == nil {
+				log.Println("The PC is online.")
+				return
 			} else {
-				break
+				log.Printf("We got an error while ping, err: %v\n", err.Error())
 			}
-		}
 
-		timer.Reset(5 * time.Second)
+			for i := 0; i < 5; i++ {
+				err := lm.Login()
+				if err != nil {
+					log.Printf("We got an error while login, err: %v\n", err.Error())
+					continue
+				}
+
+				return
+			}
+		}()
 	}
 }
 
@@ -122,7 +146,7 @@ func init() {
 	daemonCmd.MarkFlagRequired("password")
 
 	daemonCmd.Flags().StringVar(&daemonIP, "ip", "baidu.com", "Test ip with ping.")
-	daemonCmd.Flags().StringVar(&daemonLog, "log", "login.log", "Specify the log file path.")
+	daemonCmd.Flags().StringVar(&daemonLog, "log", "login", "Specify the log file path.")
 
 	rootCmd.AddCommand(daemonCmd)
 }
