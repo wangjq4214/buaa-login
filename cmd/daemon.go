@@ -121,7 +121,7 @@ func init() {
 	daemonCmd.Flags().StringVarP(&daemonPassword, "password", "p", "", "Your buaa gw password.")
 	daemonCmd.MarkFlagRequired("password")
 
-	daemonCmd.Flags().StringVar(&daemonIP, "ip", "114.114.114.114", "Test ip with ping.")
+	daemonCmd.Flags().StringVar(&daemonIP, "ip", "baidu.com", "Test ip with ping.")
 	daemonCmd.Flags().StringVar(&daemonLog, "log", "login.log", "Specify the log file path.")
 
 	rootCmd.AddCommand(daemonCmd)
